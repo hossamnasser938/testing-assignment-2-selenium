@@ -17,6 +17,35 @@ async function attemptLogin(driver, username, password) {
   await loginButton.click();
 }
 
+async function assertSuccessfulLogin(driver) {
+  const message = await driver.findElement(By.className("app_logo"));
+  const value = await message.getText();
+
+  assert.equal(value, "Swag Labs");
+}
+
+async function assertFailedLogin(driver) {
+  const message = await driver.findElement(By.css("h3"));
+  const value = await message.getText();
+
+  assert.equal(
+    value,
+    "Epic sadface: Username and password do not match any user in this service"
+  );
+}
+
+async function attemptNavigatingToCart(driver) {
+  const cartIcon = await driver.findElement(By.id("shopping_cart_container"));
+  await cartIcon.click();
+}
+
+async function assertSuccessfulNavigationToCart(driver) {
+  const title = await driver.findElement(By.className("title"));
+  const value = await title.getText();
+
+  assert.equal(value, "Your Cart");
+}
+
 describe("login operations", () => {
   let driver;
 
@@ -32,10 +61,7 @@ describe("login operations", () => {
 
     await attemptLogin(driver, CORRECT_USERNAME, CORRECT_PASSWORD);
 
-    const message = await driver.findElement(By.className("app_logo"));
-    const value = await message.getText();
-
-    assert.equal(value, "Swag Labs");
+    await assertSuccessfulLogin(driver);
   });
 
   it("failed login - wrong credntials", async () => {
@@ -43,13 +69,7 @@ describe("login operations", () => {
 
     await attemptLogin(driver, CORRECT_USERNAME, INCORRECT_PASSWORD);
 
-    const message = await driver.findElement(By.css("h3"));
-    const value = await message.getText();
-
-    assert.equal(
-      value,
-      "Epic sadface: Username and password do not match any user in this service"
-    );
+    await assertFailedLogin(driver);
   });
 
   it("successful post login redirection - navigating to cart", async () => {
@@ -57,12 +77,8 @@ describe("login operations", () => {
 
     await attemptLogin(driver, CORRECT_USERNAME, CORRECT_PASSWORD);
 
-    const cartIcon = await driver.findElement(By.id("shopping_cart_container"));
-    await cartIcon.click();
+    await attemptNavigatingToCart(driver);
 
-    const title = await driver.findElement(By.className("title"));
-    const value = await title.getText();
-
-    assert.equal(value, "Your Cart");
+    await assertSuccessfulNavigationToCart(driver);
   });
 });
