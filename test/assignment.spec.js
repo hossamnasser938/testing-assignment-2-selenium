@@ -1,10 +1,14 @@
 const { Builder, Browser, By } = require("selenium-webdriver");
 const assert = require("assert");
-const { loadLoginTestData } = require("./loadLoginTestData");
+const {
+  loadLoginTestData,
+} = require("./load-login-test-data/loadLoginTestData");
 
 const SAUCE_DEMO_URL = "https://www.saucedemo.com";
 
-const credentials = loadLoginTestData("./test/login_credentials.csv");
+const credentials = loadLoginTestData(
+  "./test/load-login-test-data/login_credentials.csv"
+);
 
 const validLoginCredentials = credentials.find(
   (row) => row.expectedResult === "success"
