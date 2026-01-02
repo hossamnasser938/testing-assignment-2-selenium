@@ -1,11 +1,22 @@
 const { Builder, Browser, By } = require("selenium-webdriver");
 const assert = require("assert");
-
-const CORRECT_USERNAME = "standard_user";
-const CORRECT_PASSWORD = "secret_sauce";
-const INCORRECT_PASSWORD = "wrong_pass";
+const { loadLoginTestData } = require("./loadLoginTestData");
 
 const SAUCE_DEMO_URL = "https://www.saucedemo.com";
+
+const credentials = loadLoginTestData("./test/login_credentials.csv");
+
+const validLoginCredentials = credentials.find(
+  (row) => row.expectedResult === "success"
+);
+const { username: validUsername, password: validPassword } =
+  validLoginCredentials;
+
+const invalidLoginCredentials = credentials.find(
+  (row) => row.expectedResult === "failure"
+);
+const { username: invalidUsername, password: invalidPassword } =
+  invalidLoginCredentials;
 
 async function attemptLogin(driver, username, password) {
   const usernameInput = await driver.findElement(By.id("user-name"));
@@ -59,7 +70,7 @@ describe("login operations", () => {
   it("successful login - correct credentials", async () => {
     await driver.get(SAUCE_DEMO_URL);
 
-    await attemptLogin(driver, CORRECT_USERNAME, CORRECT_PASSWORD);
+    await attemptLogin(driver, validUsername, validPassword);
 
     await assertSuccessfulLogin(driver);
   });
@@ -67,7 +78,7 @@ describe("login operations", () => {
   it("failed login - wrong credntials", async () => {
     await driver.get(SAUCE_DEMO_URL);
 
-    await attemptLogin(driver, CORRECT_USERNAME, INCORRECT_PASSWORD);
+    await attemptLogin(driver, invalidUsername, invalidPassword);
 
     await assertFailedLogin(driver);
   });
@@ -75,7 +86,7 @@ describe("login operations", () => {
   it("successful post login redirection - navigating to cart", async () => {
     await driver.get(SAUCE_DEMO_URL);
 
-    await attemptLogin(driver, CORRECT_USERNAME, CORRECT_PASSWORD);
+    await attemptLogin(driver, validUsername, validPassword);
 
     await attemptNavigatingToCart(driver);
 
