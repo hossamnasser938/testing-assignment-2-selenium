@@ -61,39 +61,43 @@ async function assertSuccessfulNavigationToCart(driver) {
   assert.equal(value, "Your Cart");
 }
 
-describe("login operations", () => {
-  let driver;
+const BROWSERS = [Browser.CHROME, Browser.FIREFOX, Browser.EDGE];
 
-  before(async function () {
-    driver = await new Builder().forBrowser(Browser.CHROME).build();
-    await driver.manage().setTimeouts({ implicit: 500 });
+for (const browser of BROWSERS) {
+  describe(`login operations on browser: ${browser}`, () => {
+    let driver;
+
+    before(async function () {
+      driver = await new Builder().forBrowser(browser).build();
+      await driver.manage().setTimeouts({ implicit: 500 });
+    });
+
+    after(async () => await driver.quit());
+
+    it("successful login - correct credentials", async () => {
+      await driver.get(SAUCE_DEMO_URL);
+
+      await attemptLogin(driver, validUsername, validPassword);
+
+      await assertSuccessfulLogin(driver);
+    });
+
+    it("failed login - wrong credntials", async () => {
+      await driver.get(SAUCE_DEMO_URL);
+
+      await attemptLogin(driver, invalidUsername, invalidPassword);
+
+      await assertFailedLogin(driver);
+    });
+
+    it("successful post login redirection - navigating to cart", async () => {
+      await driver.get(SAUCE_DEMO_URL);
+
+      await attemptLogin(driver, validUsername, validPassword);
+
+      await attemptNavigatingToCart(driver);
+
+      await assertSuccessfulNavigationToCart(driver);
+    });
   });
-
-  after(async () => await driver.quit());
-
-  it("successful login - correct credentials", async () => {
-    await driver.get(SAUCE_DEMO_URL);
-
-    await attemptLogin(driver, validUsername, validPassword);
-
-    await assertSuccessfulLogin(driver);
-  });
-
-  it("failed login - wrong credntials", async () => {
-    await driver.get(SAUCE_DEMO_URL);
-
-    await attemptLogin(driver, invalidUsername, invalidPassword);
-
-    await assertFailedLogin(driver);
-  });
-
-  it("successful post login redirection - navigating to cart", async () => {
-    await driver.get(SAUCE_DEMO_URL);
-
-    await attemptLogin(driver, validUsername, validPassword);
-
-    await attemptNavigatingToCart(driver);
-
-    await assertSuccessfulNavigationToCart(driver);
-  });
-});
+}
