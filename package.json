@@ -1,0 +1,19 @@
+{
+  "name": "try-selenium",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx mocha test/**/*.spec.js --timeout 120000 --parallel --retries 2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "selenium-webdriver": "^4.39.0",
+    "assert": "2.1.0"
+  },
+  "devDependencies": {
+    "mocha": "11.7.4"
+  }
+}
