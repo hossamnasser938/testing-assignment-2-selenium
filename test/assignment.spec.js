@@ -7,6 +7,16 @@ const INCORRECT_PASSWORD = "wrong_pass";
 
 const SAUCE_DEMO_URL = "https://www.saucedemo.com";
 
+async function attemptLogin(driver, username, password) {
+  const usernameInput = await driver.findElement(By.id("user-name"));
+  const paswordInput = await driver.findElement(By.id("password"));
+  const loginButton = await driver.findElement(By.id("login-button"));
+
+  await usernameInput.sendKeys(username);
+  await paswordInput.sendKeys(password);
+  await loginButton.click();
+}
+
 describe("login operations", () => {
   let driver;
 
@@ -20,13 +30,7 @@ describe("login operations", () => {
   it("successful login - correct credentials", async () => {
     await driver.get(SAUCE_DEMO_URL);
 
-    const usernameInput = await driver.findElement(By.id("user-name"));
-    const paswordInput = await driver.findElement(By.id("password"));
-    const loginButton = await driver.findElement(By.id("login-button"));
-
-    await usernameInput.sendKeys(CORRECT_USERNAME);
-    await paswordInput.sendKeys(CORRECT_PASSWORD);
-    await loginButton.click();
+    await attemptLogin(driver, CORRECT_USERNAME, CORRECT_PASSWORD);
 
     const message = await driver.findElement(By.className("app_logo"));
     const value = await message.getText();
@@ -37,13 +41,7 @@ describe("login operations", () => {
   it("failed login - wrong credntials", async () => {
     await driver.get(SAUCE_DEMO_URL);
 
-    const usernameInput = await driver.findElement(By.id("user-name"));
-    const paswordInput = await driver.findElement(By.id("password"));
-    const loginButton = await driver.findElement(By.id("login-button"));
-
-    await usernameInput.sendKeys(CORRECT_USERNAME);
-    await paswordInput.sendKeys(INCORRECT_PASSWORD);
-    await loginButton.click();
+    await attemptLogin(driver, CORRECT_USERNAME, INCORRECT_PASSWORD);
 
     const message = await driver.findElement(By.css("h3"));
     const value = await message.getText();
@@ -57,13 +55,7 @@ describe("login operations", () => {
   it("successful post login redirection - navigating to cart", async () => {
     await driver.get(SAUCE_DEMO_URL);
 
-    const usernameInput = await driver.findElement(By.id("user-name"));
-    const paswordInput = await driver.findElement(By.id("password"));
-    const loginButton = await driver.findElement(By.id("login-button"));
-
-    await usernameInput.sendKeys(CORRECT_USERNAME);
-    await paswordInput.sendKeys(CORRECT_PASSWORD);
-    await loginButton.click();
+    await attemptLogin(driver, CORRECT_USERNAME, CORRECT_PASSWORD);
 
     const cartIcon = await driver.findElement(By.id("shopping_cart_container"));
     await cartIcon.click();
